@@ -1,9 +1,18 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLoading } from '../contexts/LoadingContext';
 
 const Navbar = ({ headerOpacity }) => {
     const navigate = useNavigate();
+    const { showLoading } = useLoading();
+
+    const handleNavigate = (path) => {
+        showLoading();
+        setTimeout(() => {
+            navigate(path);
+        }, 2000); // tampil loading 2 detik sebelum pindah halaman
+    };
     return (
         <motion.nav
             style={{ opacity: headerOpacity }}
@@ -31,14 +40,14 @@ const Navbar = ({ headerOpacity }) => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <button 
-                    onClick={() => navigate('/login')}
-                    className="hidden md:block text-sm px-5 py-2.5 border border-[#ff6b00] text-[#ff6b00] rounded-full hover:bg-[#ff6b00]/5 transition-all active:scale-95">
+                    <button
+                        onClick={() => handleNavigate('/login')}
+                        className="hidden md:block text-sm px-5 py-2.5 border border-[#ff6b00] text-[#ff6b00] rounded-full hover:bg-[#ff6b00]/5 transition-all active:scale-95">
                         Masuk
                     </button>
-                    <button 
-                    onClick={() => navigate('/register')}
-                    className="bg-[#ff6b00] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-[#e55e00] transition-all active:scale-95 flex items-center gap-2">
+                    <button
+                        onClick={() => handleNavigate('/register')}
+                        className="bg-[#ff6b00] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-[#e55e00] transition-all active:scale-95 flex items-center gap-2">
                         Daftar <ArrowRight className="w-4 h-4" />
                     </button>
                 </div>

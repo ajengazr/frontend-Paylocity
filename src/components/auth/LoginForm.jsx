@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import AuthFormCard from './AuthFormCard';
+import api from '../../config/api';
+import { useEffect } from 'react';
+import { useLoading } from "../../contexts/LoadingContext";
 
 const GoogleIcon = () => (
     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -22,15 +25,46 @@ const LoginForm = () => {
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
+    const { showLoading, hideLoading } = useLoading();
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        hideLoading();   // ← tutup loading saat halaman baru dibuka
+    }, [hideLoading]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log({ email, password, rememberMe });
+        setError('');
+        showLoading();
+
+
+        try {
+            await api.post('/api/users/login', { email, password });
+
+            await new Promise(resolve => setTimeout(resolve, 2500)); //biar halaman loadingnya kerasa, bukan langsung hilang
+            hideLoading();
+            window.location.href = '/dashboard';
+
+        } catch (err) {
+            const message = err.response?.data?.errors
+                ?? 'Tidak dapat terhubung ke server. Coba lagi.';
+            setError(message);
+            hideLoading();
+        } finally {
+            hideLoading();
+        }
     };
 
     return (
-        <AuthFormCard title="Sign In" subtitle="Great to see you again!">
+        <AuthFormCard title="Masuk" subtitle="Senang bertemu denganmu lagi!">
             <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
+
+                {/* Error message */}
+                {error && (
+                    <div className="px-3 py-2 rounded-md bg-red-50 border border-red-200 text-[11px] text-red-600 font-medium">
+                        {error}
+                    </div>
+                )}
 
                 {/* Email */}
                 <div className="space-y-0.5">
@@ -40,8 +74,10 @@ const LoginForm = () => {
                         <input
                             id="email" type="email" required placeholder="name@paylocity.com"
                             value={email} onChange={(e) => setEmail(e.target.value)}
+
                             className="w-full pl-9 pr-3 py-2 rounded-md border border-[#e4e2de] bg-[#F6F4F0] text-xs 
-                            focus:ring-2 focus:ring-[#ED5807]/20 focus:border-[#ED5807] outline-none transition-all"
+                            focus:ring-2 focus:ring-[#ED5807]/20 focus:border-[#ED5807] outline-none transition-all
+                            disabled:opacity-60 disabled:cursor-not-allowed"
                         />
                     </div>
                 </div>
@@ -54,8 +90,10 @@ const LoginForm = () => {
                         <input
                             id="password" type={showPassword ? 'text' : 'password'} required placeholder="••••••••"
                             value={password} onChange={(e) => setPassword(e.target.value)}
+
                             className="w-full pl-9 pr-9 py-2 rounded-md border border-[#e4e2de] bg-[#F6F4F0] text-xs focus:ring-2 
-                            focus:ring-[#ED5807]/20 focus:border-[#ED5807] outline-none transition-all"
+                            focus:ring-[#ED5807]/20 focus:border-[#ED5807] outline-none transition-all
+                            disabled:opacity-60 disabled:cursor-not-allowed"
                         />
                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute 
                         right-3 top-1/2 -translate-y-1/2 text-[#54606b] hover:text-[#323E48] transition-colors">
@@ -67,17 +105,29 @@ const LoginForm = () => {
                 {/* Remember & Forgot */}
                 <div className="flex items-center justify-between gap-2 pt-0.5">
                     <label className="flex items-center gap-1.5 cursor-pointer select-none">
-                        <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="w-3.5 h-3.5 rounded border-[#e4e2de] text-[#ED5807] focus:ring-[#ED5807] cursor-pointer shrink-0" />
+                        <input
+                            type="checkbox" checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="w-3.5 h-3.5 rounded border-[#e4e2de] text-[#ED5807] focus:ring-[#ED5807] cursor-pointer shrink-0"
+                        />
                         <span className="text-[11px] text-[#54606b]">Ingatkan saya</span>
                     </label>
                     <a href="#forgot" className="text-[11px] text-[#ED5807] hover:text-[#a33900] font-semibold transition-colors shrink-0">Lupa?</a>
                 </div>
 
                 {/* Submit */}
-                <button type="submit" className="w-full bg-[#ED5807] hover:bg-[#d64f06] text-white font-semibold py-2.5 rounded-md text-xs border-2 border-[#323E48] shadow-[2px_2px_0px_#323E48] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
+                <button
+                    type="submit"
+                    className="w-full bg-[#ED5807] hover:bg-[#d64f06] text-white font-semibold py-2.5 rounded-md text-xs 
+                    border-2 border-[#323E48] shadow-[2px_2px_0px_#323E48] active:shadow-none active:translate-x-0.5 
+                    active:translate-y-0.5 transition-all flex items-center justify-center gap-2 group
+                    disabled:opacity-60 disabled:cursor-not-allowed disabled:active:shadow-[2px_2px_0px_#323E48]
+                    disabled:active:translate-x-0 disabled:active:translate-y-0"
+                >
                     Masuk
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
+                
             </form>
 
             {/* Divider */}

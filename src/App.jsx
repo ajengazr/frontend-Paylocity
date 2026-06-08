@@ -5,24 +5,27 @@ import Help from './pages/help'
 import ContactPage from './pages/ContactPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-// import HelpPage from './pages/HelpPage'
+import DashboardPage from './pages/DashboardPage'
+import { LoadingProvider } from './contexts/LoadingContext';
 
 function App() {
 
   return (
     <>
-      <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<PaylocityHomepage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/help" element={<Help />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        {/* <Route path="/help" element={<HelpPage />} /> */}
-        {/* Tambah route lain di sini nanti */}
-      </Routes>
-    </BrowserRouter>
+      <LoadingProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<PaylocityHomepage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            {/* Tambah route lain di sini nanti */}
+          </Routes>
+        </BrowserRouter>
+      </LoadingProvider>
     </>
   )
 }
