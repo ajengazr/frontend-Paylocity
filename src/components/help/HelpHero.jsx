@@ -1,7 +1,21 @@
 import { motion } from 'framer-motion';
-import { Search, HelpCircle } from 'lucide-react';
+import { Search, HelpCircle, X } from 'lucide-react';
+import { useState } from 'react';
 
-const HelpHero = () => {
+const HelpHero = ({ onSearch }) => {
+    const [query, setQuery] = useState('');
+
+    const handleChange = (e) => {
+        const value = e.target.value;
+        setQuery(value);
+        onSearch?.(value);
+    };
+
+    const handleClear = () => {
+        setQuery('');
+        onSearch?.('');
+    };
+
     return (
         <div className="relative pt-24 pb-16 md:pb-24 bg-linear-to-br from-[#eff6ff] via-[#dbeafe] to-[#bfdbfe] overflow-hidden">
             <div className="max-w-4xl mx-auto px-4 md:px-6 text-center relative z-10">
@@ -32,7 +46,6 @@ const HelpHero = () => {
                     Kami siap membantu Anda memahami setiap fitur Paylocity dengan mudah.
                 </motion.p>
 
-                {/* Search Bar */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -44,13 +57,21 @@ const HelpHero = () => {
                         <input
                             type="text"
                             placeholder="Cari pertanyaan..."
-                            className="w-full pl-12 md:pl-14 pr-6 py-4 md:py-5 rounded-2xl md:rounded-3xl bg-white shadow-lg shadow-black/5 border border-gray-100 focus:border-[#ff6b00] focus:outline-none focus:ring-4 focus:ring-[#ff6b00]/10 transition-all text-sm md:text-base placeholder:text-gray-400"
+                            value={query}
+                            onChange={handleChange}
+                            className="w-full pl-12 md:pl-14 pr-12 py-4 md:py-5 rounded-2xl md:rounded-3xl bg-white shadow-lg shadow-black/5 border border-gray-100 focus:border-[#ff6b00] focus:outline-none focus:ring-4 focus:ring-[#ff6b00]/10 transition-all text-sm md:text-base placeholder:text-gray-400"
                         />
+                        {query && (
+                            <button
+                                onClick={handleClear}
+                                className="absolute right-4 md:right-5 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                            >
+                                <X className="w-4 h-4 text-gray-400" />
+                            </button>
+                        )}
                     </div>
                 </motion.div>
             </div>
-
-            {/* Decorative bottom fade */}
             <div className="absolute bottom-0 left-0 right-0 h-20 md:h-24 bg-linear-to-t from-[#fbf9f8] to-transparent" />
         </div>
     );

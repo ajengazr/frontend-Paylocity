@@ -1,40 +1,72 @@
-import { motion } from 'framer-motion';
+import { useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageCircleQuestion } from 'lucide-react';
 import { faqData } from '../../data/faqData';
-import FAQItem from './FAQItem';
 
-const FaqSection = () => {
+const FaqSection = ({ searchQuery }) => {
+    const filteredFAQs = useMemo(() => {
+        if (!searchQuery.trim()) return faqData;
+
+        const lower = searchQuery.toLowerCase();
+        return faqData.filter(item =>
+            item.question.toLowerCase().includes(lower) ||
+            item.answer.toLowerCase().includes(lower)
+        );
+    }, [searchQuery]);
+
     return (
-        <section className="py-16 md:py-24 bg-[#fbf9f8]">
-            <div className="max-w-3xl mx-auto px-4 md:px-6">
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-                    className="text-center mb-12 md:mb-16"
-                >
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1b1c1c] tracking-tight">
-                        Pertanyaan yang Sering{" "}
-                        <span className="bg-linear-to-r from-[#ff6b00] via-[#ec4899] to-[#3b82f6] bg-clip-text text-transparent">
-                            Diajukan
-                        </span>
-                    </h2>
-                    <p className="mt-4 text-gray-600 text-base md:text-lg max-w-xl mx-auto">
-                        Temukan jawaban cepat seputar fitur, keamanan, dan cara menggunakan Paylocity.
-                    </p>
-                </motion.div>
+        <section className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
+            {searchQuery && (
+                <p className="text-sm text-gray-500 mb-6">
+                    Menampilkan {filteredFAQs.length} hasil untuk "{searchQuery}"
+                </p>
+            )}
 
-                <div className="space-y-3 md:space-y-4">
-                    {faqData.map((item, index) => (
-                        <FAQItem
-                            key={index}
-                            question={item.question}
-                            answer={item.answer}
-                            index={index}
-                        />
-                    ))}
-                </div>
-            </div>
+            <AnimatePresence mode="popLayout">
+                {filteredFAQs.length === 0 ? (
+                    <motion.div
+                        key="empty"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="text-center py-16"
+                    >
+                        <MessageCircleQuestion className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-gray-500 text-lg font-medium">Tidak ada hasil yang cocok</p>
+                        <p className="text-gray-400 text-sm mt-1">Coba kata kunci lain</p>
+                    </motion.div>
+                ) : (
+                    <div className="space-y-3">
+                        {filteredFAQs.map((faq, index) => (
+                            <motion.details
+                                key={faq.question}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ delay: index * 0.03 }}
+                                className="group bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden open:shadow-md transition-shadow"
+                            >
+                                <summary className="flex items-center justify-between p-5 md:p-6 cursor-pointer list-none hover:bg-gray-50/50 transition-colors">
+                                    <h3 className="text-sm md:text-base font-semibold text-gray-800 pr-4">
+                                        {faq.question}
+                                    </h3>
+                                    <svg
+                                        className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform shrink-0"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </summary>
+                                <div className="px-5 md:px-6 pb-5 md:pb-6 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
+                                    {faq.answer}
+                                </div>
+                            </motion.details>
+                        ))}
+                    </div>
+                )}
+            </AnimatePresence>
         </section>
     );
 };

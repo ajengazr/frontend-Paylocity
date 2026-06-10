@@ -7,25 +7,32 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import { LoadingProvider } from './contexts/LoadingContext';
+import { ToastProvider } from './contexts/ToastContext'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
-
   return (
     <>
-      <LoadingProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<PaylocityHomepage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            {/* Tambah route lain di sini nanti */}
-          </Routes>
-        </BrowserRouter>
-      </LoadingProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <LoadingProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<PaylocityHomepage />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </LoadingProvider>
+        </ToastProvider>
+      </AuthProvider>
     </>
   )
 }

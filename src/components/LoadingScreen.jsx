@@ -2,10 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 
 // Definisikan steps di luar komponen agar tidak dibuat ulang setiap render
 const LOADING_STEPS = [
-    { progress: 15, text: 'Memulai sistem inti...' },
-    { progress: 32, text: 'Mengamankan koneksi...' },
-    { progress: 48, text: 'Memuat basis data...' },
-    { progress: 65, text: 'Memverifikasi kredensial...' },
+    { progress: 15, text: 'Memulai sistem inti...' }, 
     { progress: 89, text: 'Mengoptimalkan tampilan...' },
     { progress: 98, text: 'Menyelesaikan...' },
 ];

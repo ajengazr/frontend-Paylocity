@@ -4,6 +4,8 @@ import AuthFormCard from './AuthFormCard';
 import api from '../../config/api';
 import { useEffect } from 'react';
 import { useLoading } from "../../contexts/LoadingContext";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const GoogleIcon = () => (
     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -27,6 +29,8 @@ const LoginForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const { showLoading, hideLoading } = useLoading();
+    const navigate = useNavigate();
+    const { login } = useAuth()
 
     useEffect(() => {
         hideLoading();   // ← tutup loading saat halaman baru dibuka
@@ -39,11 +43,33 @@ const LoginForm = () => {
 
 
         try {
-            await api.post('/api/users/login', { email, password });
+            const response = await api.post('/api/users/login', { email, password });
+
+            const apiData = response.data?.data || response.data;
+
+            if (!apiData || !apiData.token) {
+                throw new Error('Data login tidak valid');
+            }
+
+            console.log("dari api untuk role: ", apiData.role);
+            // Mapping field backend ke field yang dipakai frontend
+            const userData = {
+                name: apiData.username || apiData.name || 'User',  // backend pakai "username"
+                email: apiData.email,
+                role: apiData.role,
+                token: apiData.token,
+            };
+
+            console.log('Mapped userData:', userData);
+            // Simpan ke context
+            login(userData);
 
             await new Promise(resolve => setTimeout(resolve, 2500)); //biar halaman loadingnya kerasa, bukan langsung hilang
             hideLoading();
-            window.location.href = '/dashboard';
+
+            navigate('/dashboard', {
+                state: { fromLogin: 'Login berhasil!' }
+            });
 
         } catch (err) {
             const message = err.response?.data?.errors
@@ -127,7 +153,7 @@ const LoginForm = () => {
                     Masuk
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
-                
+
             </form>
 
             {/* Divider */}
@@ -153,7 +179,9 @@ const LoginForm = () => {
 
             <p className="mt-4 text-center text-[11px] text-[#54606b]">
                 Belum punya akun?{' '}
-                <a href="/register" className="text-[#ED5807] font-bold hover:underline underline-offset-4">Daftar Gratis</a>
+                <span className="text-[#ED5807] font-bold ">
+                    Hubungi admin
+                </span>
             </p>
         </AuthFormCard>
     );

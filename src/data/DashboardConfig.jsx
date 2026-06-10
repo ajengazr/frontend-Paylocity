@@ -1,7 +1,26 @@
+export const API_ENDPOINTS = {
+    SUPER_ADMIN: {
+        employees: '/api/employees',
+        departments: '/api/departments',    // placeholder
+        overtime: '/api/overtime',        // placeholder
+        payroll: '/api/payroll/summary',  // placeholder
+    },
+    HR_ADMIN: {
+        employees: '/api/employees',
+        overtime: '/api/overtime',
+        payroll: '/api/payroll/summary',
+    },
+    EMPLOYEE: {
+        profile: '/api/users/me',
+        slips: '/api/payroll/slips',      // placeholder
+        overtime: '/api/overtime/my',     // placeholder
+    }
+};
+
 export const ROLE_CONFIG = {
-    admin: {
-        userName: 'Admin Paylocity',
-        userRole: 'Administrator',
+    SUPER_ADMIN: {
+        userName: 'Super Admin',
+        userRole: 'Super Administrator',
         userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
         menu: [
             { name: 'Dashboard', icon: 'LayoutDashboard' },
@@ -11,6 +30,7 @@ export const ROLE_CONFIG = {
             { name: 'Lembur', icon: 'Clock' },
             { name: 'Penggajian', icon: 'Wallet' },
             { name: 'Laporan', icon: 'FileText' },
+            // { name: 'Pengaturan', icon: 'Settings' },
         ],
         stats: [
             { label: 'Total Karyawan', value: '125', suffix: '', trend: '+4 bulan ini', icon: 'Users', color: 'blue' },
@@ -57,9 +77,67 @@ export const ROLE_CONFIG = {
         modalBtnConfirm: 'Ya, Proses Sekarang',
         modalBtnCancel: 'Batal',
         btnProcessLabel: 'Proses Payroll Baru',
+        isAdmin: true, // ← flag untuk logic UI
     },
 
-    employee: {
+    HR_ADMIN: {
+        userName: 'HR Admin',
+        userRole: 'HR Administrator',
+        userAvatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=100&q=80',
+        menu: [
+            { name: 'Dashboard', icon: 'LayoutDashboard' },
+            { name: 'Data Karyawan', icon: 'Users' },
+            { name: 'Lembur', icon: 'Clock' },
+            { name: 'Penggajian', icon: 'Wallet' },
+        ],
+        stats: [
+            { label: 'Total Karyawan', value: '125', suffix: '', trend: '+4 bulan ini', icon: 'Users', color: 'blue' },
+            { label: 'Total Jam Lembur', value: '245', suffix: ' Jam', trend: 'Menunggu review', icon: 'Clock', color: 'amber' },
+            { label: 'Total Penggajian', value: 'Rp 850.000.000', suffix: '', trend: 'Periode Juni 2024', icon: 'Wallet', color: 'emerald' },
+            { label: 'Pengajuan Pending', value: '12', suffix: '', trend: 'Butuh persetujuan', icon: 'AlertCircle', color: 'purple' },
+        ],
+        chartTitle: 'Payroll Bulanan',
+        chartSubtitle: 'Tren pengeluaran payroll semester 1',
+        donutTitle: 'Distribusi Karyawan',
+        donutData: [
+            { label: 'IT', value: 42, color: '#ff6b00' },
+            { label: 'Keuangan', value: 18, color: '#1a2332' },
+            { label: 'HR', value: 12, color: '#9ca3af' },
+            { label: 'Marketing', value: 25, color: '#93c5fd' },
+        ],
+        tableTitle: 'Pengajuan Lembur Terbaru',
+        tableColumns: ['Nama Karyawan', 'Tanggal', 'Jam Lembur', 'Status'],
+        tableData: [
+            { id: 1, nama: 'Aditya Saputra', initials: 'AS', color: 'bg-orange-100 text-orange-700', tanggal: '14 Juni 2024', jam: '4.5 Jam', status: 'Pending' },
+            { id: 2, nama: 'Rina Maharani', initials: 'RM', color: 'bg-blue-100 text-blue-700', tanggal: '13 Juni 2024', jam: '2 Jam', status: 'Disetujui' },
+            { id: 3, nama: 'Budi Pratama', initials: 'BP', color: 'bg-teal-100 text-teal-700', tanggal: '13 Juni 2024', jam: '3 Jam', status: 'Ditolak' },
+        ],
+        activityTitle: 'Aktivitas Terbaru',
+        activityData: [
+            { title: 'Payroll Selesai Diproses', desc: 'Gaji periode Mei telah dikirim ke semua karyawan.', time: '5 jam yang lalu', icon: 'Check', color: 'bg-emerald-500' },
+            { title: 'Pengajuan Lembur Masuk', desc: '3 karyawan mengajukan lembur hari ini.', time: '2 jam yang lalu', icon: 'Clock', color: 'bg-amber-500' },
+        ],
+        showPayrollSummary: true,
+        payrollSummary: {
+            items: [
+                { label: 'Total Gaji Pokok', value: 'Rp 620.000.000', color: 'bg-[#ff6b00]' },
+                { label: 'Total Tunjangan', value: 'Rp 145.000.000', color: 'bg-gray-600' },
+                { label: 'Total Lembur', value: 'Rp 35.000.000', color: 'bg-gray-600' },
+                { label: 'Total PPh 21', value: 'Rp 28.500.000', color: 'bg-gray-600' },
+                { label: 'Total BPJS', value: 'Rp 21.500.000', color: 'bg-gray-600' },
+            ],
+            grandTotal: 'Rp 850.000.000',
+            footerNote: 'Estimasi pengeluaran total perusahaan periode ini.',
+        },
+        modalTitle: 'Inisiasi Payroll Baru',
+        modalDesc: 'Apakah Anda ingin memproses payroll untuk periode Juni 2024?',
+        modalBtnConfirm: 'Ya, Proses Sekarang',
+        modalBtnCancel: 'Batal',
+        btnProcessLabel: 'Proses Payroll Baru',
+        isAdmin: true,
+    },
+
+    EMPLOYEE: {
         userName: 'Budi Santoso',
         userRole: 'Karyawan IT',
         userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
@@ -68,7 +146,6 @@ export const ROLE_CONFIG = {
             { name: 'Profil Saya', icon: 'User' },
             { name: 'Slip Gaji', icon: 'Receipt' },
             { name: 'Riwayat Lembur', icon: 'Clock' },
-            { name: 'Pengaturan', icon: 'Settings' },
         ],
         stats: [
             { label: 'Gaji Bulan Ini', value: 'Rp 12.500.000', suffix: '', trend: 'Cair 28 Juni 2024', icon: 'Wallet', color: 'emerald' },
@@ -115,5 +192,6 @@ export const ROLE_CONFIG = {
         modalBtnConfirm: 'Ajukan Sekarang',
         modalBtnCancel: 'Batal',
         btnProcessLabel: 'Ajukan Lembur',
+        isAdmin: false,
     },
 };

@@ -9,20 +9,32 @@ const colorMap = {
 
 const StatCard = ({ label, value, suffix, trend, icon, color, isDarkMode }) => {
     const Icon = iconMap[icon];
+
     return (
-        <div className={`p-6 rounded-xl border shadow-sm transition-all ${isDarkMode ? 'bg-[#1e293b] border-[#2d3748]' : 'bg-white border-gray-100'}`}>
-            <div className="flex justify-between items-start">
-                <div>
-                    <p className={`text-xs font-semibold tracking-wider uppercase ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{label}</p>
-                    <p className="text-3xl font-bold mt-2">{value}{suffix}</p>
+        <div className={`p-4 sm:p-5 lg:p-6 rounded-xl border shadow-sm transition-all overflow-hidden ${isDarkMode ? 'bg-[#1e293b] border-[#2d3748]' : 'bg-white border-gray-100'
+            }`}>
+            <div className="flex items-start justify-between gap-3">
+                {/* Kiri: Teks */}
+                <div className="min-w-0 flex-1">
+                    <p className={`text-[10px] sm:text-xs font-semibold tracking-wider uppercase truncate ${isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`}>
+                        {label}
+                    </p>
+                    <p className="text-lg font-bold mt-1 sm:mt-2 wrap-break-word leading-tight">
+                        {value}{suffix}
+                    </p>
+                    <p className={`text-[10px] sm:text-xs mt-1.5 sm:mt-2 font-medium truncate ${color === 'emerald' ? 'text-emerald-500' :
+                            color === 'amber' ? 'text-amber-500' :
+                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`}>
+                        {trend}
+                    </p>
                 </div>
-                <div className={`p-3 rounded-lg ${colorMap[color] || colorMap.blue}`}>
-                    <Icon className="w-6 h-6" />
+
+                {/* Kanan: Icon — flex-shrink-0 supaya tidak diperkecil */}
+                <div className={`shrink-0 p-2 sm:p-2.5 lg:p-3 rounded-lg ${colorMap[color] || colorMap.blue}`}>
+                    <Icon className="w-5 h-5 sm:w-5 sm:h-5" />
                 </div>
-            </div>
-            <div className={`flex items-center gap-1.5 mt-4 text-xs font-semibold ${color === 'emerald' ? 'text-emerald-500' : color === 'amber' ? 'text-amber-500' : isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                }`}>
-                {trend}
             </div>
         </div>
     );

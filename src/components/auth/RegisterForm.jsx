@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Building2 } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import AuthFormCard from './AuthFormCard';
 import api from '../../config/api';
 import { useLoading } from "../../contexts/LoadingContext";
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
     const [form, setForm] = useState({
@@ -18,6 +19,7 @@ const RegisterForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         hideLoading();   // ← tutup loading saat halaman baru dibuka
@@ -49,11 +51,10 @@ const RegisterForm = () => {
                 password: form.password,
             });
 
-            await new Promise(resolve => setTimeout(resolve, 2500)); //biar halaman loadingnya kerasa, bukan langsung hilang
             setSuccess('Akun berhasil dibuat! Mengalihkan ke halaman login...');
             hideLoading();
             setTimeout(() => {
-                window.location.href = '/login';
+                navigate('/login');
             }, 1500);
 
         } catch (err) {
@@ -68,7 +69,7 @@ const RegisterForm = () => {
     };
 
     return (
-        <AuthFormCard title="Buat Akun" subtitle="Mulai uji coba gratis 14 hari">
+        <AuthFormCard title="Buat Akun">
             <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
 
                 {/* Error message */}
@@ -94,20 +95,6 @@ const RegisterForm = () => {
                             id="username" name="username" type="text" required
                             placeholder="My Little Bolu Ketan"
                             value={form.username} onChange={handleChange}
-                            className="w-full pl-9 pr-3 py-2 rounded-md border border-[#e4e2de] bg-[#F6F4F0] text-xs focus:ring-2 focus:ring-[#ED5807]/20 focus:border-[#ED5807] outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                        />
-                    </div>
-                </div>
-
-                {/* Nama Perusahaan */}
-                <div className="space-y-0.5">
-                    <label className="text-[11px] font-semibold text-[#54606b]" htmlFor="companyName">Nama Perusahaan</label>
-                    <div className="relative">
-                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#54606b] pointer-events-none" />
-                        <input
-                            id="companyName" name="companyName" type="text" required
-                            placeholder="PT Paylocity"
-                            value={form.companyName} onChange={handleChange}
                             className="w-full pl-9 pr-3 py-2 rounded-md border border-[#e4e2de] bg-[#F6F4F0] text-xs focus:ring-2 focus:ring-[#ED5807]/20 focus:border-[#ED5807] outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                         />
                     </div>
@@ -194,10 +181,6 @@ const RegisterForm = () => {
                 </button>
             </form>
 
-            <p className="mt-4 text-center text-[11px] text-[#54606b]">
-                Sudah Punya Akun?{' '}
-                <a href="/login" className="text-[#ED5807] font-bold hover:underline underline-offset-4">Masuk</a>
-            </p>
         </AuthFormCard>
     );
 };

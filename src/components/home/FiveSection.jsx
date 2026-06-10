@@ -1,6 +1,20 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';        
+import { useLoading } from '../../contexts/LoadingContext';
 
 const FiveSection = () => {
+    const { showLoading } = useLoading(); 
+    const navigate = useNavigate();                  
+
+    const handleClick = (e) => {
+        e.preventDefault(); 
+        showLoading();
+
+        setTimeout(() => {
+            navigate('/register');  
+        }, 2000); //
+    };
+
     return (
         <section className="py-24 bg-[#fbf9f8]">
             <div className="max-w-5xl mx-auto px-6">
@@ -23,7 +37,12 @@ const FiveSection = () => {
                             whileTap={{ scale: 0.97 }}
                             className="bg-white text-[#ff6b00] font-semibold text-lg px-12 py-5 rounded-2xl hover:shadow-2xl transition-all"
                         >
-                            <a href="/register">Coba Gratis Sekarang</a>
+                            <a
+                                href="/login"
+                                onClick={handleClick}
+                            >
+                                Coba Gratis Sekarang
+                            </a>
                         </motion.button>
                     </div>
                 </motion.div>
