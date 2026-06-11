@@ -69,6 +69,7 @@ const DashboardLayout = ({ role }) => {
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 isDarkMode={isDarkMode}
+                role={role}
             />
 
             {/* Main: padding kiri hanya di desktop, padding atas untuk mobile toggle */}

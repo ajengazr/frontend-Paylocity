@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+// import { Link } from 'react-router-dom';
+// import { ArrowLeft } from 'lucide-react';
 
 const AuthLeftPanel = () => {
     return (
         <section className="hidden lg:flex lg:w-1/2 bg-[#ED5807] relative flex-col justify-center items-center p-6 overflow-hidden">
 
             {/* Tombol Kembali */}
-            <Link
+            {/* <Link
                 to="/"
                 className="absolute top-6 left-6 z-20 flex items-center gap-2 text-white/90 
                 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2.5 
@@ -14,7 +14,7 @@ const AuthLeftPanel = () => {
             >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                 Kembali ke Beranda
-            </Link>
+            </Link> */}
 
             {/* Decorative */}
             <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl" />

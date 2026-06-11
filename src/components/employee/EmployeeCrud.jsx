@@ -1,14 +1,41 @@
-import { Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import employeeApi from '../../config/employeeApi';
+import departmentApi from '../../config/departmentApi';
+import positionApi from '../../config/positionApi';
 import CrudTemplate from '../CrudTemplate';
 
 const EmployeeCrud = ({ isDarkMode }) => {
+    const [deptOptions, setDeptOptions] = useState([]);
+    const [posOptions, setPosOptions] = useState([]);
+
+    // Fetch departments & positions untuk dropdown
+    useEffect(() => {
+        const fetchOptions = async () => {
+            try {
+                const [deptRes, posRes] = await Promise.all([
+                    departmentApi.getAll(),
+                    positionApi.getAll()
+                ]);
+
+                const depts = deptRes.data?.data || [];
+                const positions = posRes.data?.data || [];
+
+                // Dropdown: label = nama, value = id (string untuk select)
+                setDeptOptions(depts.map(d => ({ value: String(d.id), label: d.name })));
+                setPosOptions(positions.map(p => ({ value: String(p.id), label: p.name })));
+            } catch (err) {
+                console.error('Gagal fetch dropdown:', err);
+            }
+        };
+
+        fetchOptions();
+    }, []);
+
     return (
         <CrudTemplate
             api={employeeApi}
             title="Data Karyawan"
             subtitle="Kelola data seluruh karyawan perusahaan"
-            icon={Users}
             isDarkMode={isDarkMode}
             searchKeys={['name', 'email', 'dept']}
             columns={[
@@ -43,15 +70,9 @@ const EmployeeCrud = ({ isDarkMode }) => {
                 { name: 'email', label: 'Email', type: 'email', required: true },
                 { name: 'password', label: 'Password', type: 'password', required: true, showOnEdit: false },
                 { name: 'nik', label: 'NIK', required: true },
-                {
-                    name: 'department', label: 'Departemen', type: 'select', required: true, options: [
-                        { value: 'IT', label: 'IT' },
-                        { value: 'HR', label: 'HR' },
-                        { value: 'Finance', label: 'Finance' },
-                        { value: 'Marketing', label: 'Marketing' },
-                    ]
-                },
-                { name: 'position', label: 'Jabatan', required: true },
+                // DROPDOWN DINAMIS: label = nama departemen, value = id
+                { name: 'departmentId', label: 'Departemen', type: 'select', required: true, options: deptOptions },
+                { name: 'positionId', label: 'Jabatan', type: 'select', required: true, options: posOptions },
                 { name: 'basicSalary', label: 'Gaji Pokok', type: 'number', required: true },
                 {
                     name: 'taxStatus', label: 'Status Pajak', type: 'select', required: true, showOnEdit: false, options: [
@@ -77,20 +98,22 @@ const EmployeeCrud = ({ isDarkMode }) => {
                     { key: 'joinDate', label: 'Tanggal Masuk', type: 'date', fullWidth: true },
                 ]
             }}
+            // PENTING: transformRow harus include departmentId & positionId untuk edit
             transformRow={(emp) => ({
                 id: emp.id,
                 name: emp.user?.username || '-',
                 email: emp.user?.email || '-',
                 role: emp.user?.role || '-',
                 nik: emp.nik,
-                dept: emp.department || '-',
-                position: emp.position || '-',
-                salary: emp.basicSalary,
+                dept: emp.department?.name || '-',
+                position: emp.position?.name || '-',
+                // INI PENTING: ID untuk form edit
+                departmentId: emp.department?.id,
+                positionId: emp.position?.id,
                 status: emp.status || 'Aktif',
                 joinDate: emp.joinDate ? new Date(emp.joinDate).toLocaleDateString('id-ID') : '-',
                 username: emp.user?.username,
                 password: '',
-                department: emp.department,
                 basicSalary: emp.basicSalary,
                 taxStatus: emp.taxStatus,
             })}
@@ -99,8 +122,8 @@ const EmployeeCrud = ({ isDarkMode }) => {
                 email: emp.user?.email || emp.email,
                 role: emp.user?.role || emp.role,
                 nik: emp.nik,
-                department: emp.department,
-                position: emp.position,
+                department: emp.department?.name,
+                position: emp.position?.name,
                 basicSalary: emp.basicSalary,
                 taxStatus: emp.taxStatus,
                 status: emp.status,

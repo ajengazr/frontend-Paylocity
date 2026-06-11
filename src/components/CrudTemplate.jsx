@@ -6,7 +6,6 @@ const CrudTemplate = ({
     api,
     title,
     subtitle,
-    // icon: IconHeader,
     columns,
     formFields,
     detailConfig,
@@ -14,6 +13,7 @@ const CrudTemplate = ({
     transformRow,
     transformDetail,
     isDarkMode,
+    renderCreateForm,
 }) => {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -79,7 +79,7 @@ const CrudTemplate = ({
 
     const formatDate = (val) => {
         if (!val) return '-';
-        return new Date(val).toLocaleDateString('id-ID'); // 10/06/2026
+        return new Date(val).toLocaleDateString('id-ID');
     };
 
     const filtered = items.map(transformRow).filter((row) =>
@@ -107,7 +107,10 @@ const CrudTemplate = ({
         setEditingId(row.id);
         const newForm = {};
         formFields.forEach(f => {
-            newForm[f.name] = row[f.name] ?? row[f.key] ?? '';
+            let val = row[f.name];
+            if (val === undefined || val === null) val = row[f.key];
+            if (val === undefined || val === null) val = '';
+            newForm[f.name] = String(val);
         });
         setForm(newForm);
         setIsModalOpen(true);
@@ -131,7 +134,12 @@ const CrudTemplate = ({
             const payload = {};
             formFields.forEach(f => {
                 if (form[f.name] !== undefined && form[f.name] !== '') {
-                    payload[f.name] = f.type === 'number' ? Number(form[f.name]) : form[f.name];
+                    let val = form[f.name];
+                    const isIdField = f.name.endsWith('Id') && !isNaN(val) && val !== '';
+                    if (f.type === 'number' || isIdField) {
+                        val = Number(val);
+                    }
+                    payload[f.name] = val;
                 }
             });
 
@@ -290,33 +298,50 @@ const CrudTemplate = ({
                 </div>
             </div>
 
-            {/* Modal Create/Edit */}
+            {/* ========== MODAL CREATE / EDIT ========== */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <div className={`w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border shadow-xl p-6 ${isDarkMode ? 'bg-[#1e293b] border-[#334155] text-white' : 'bg-white border-gray-100 text-[#151c27]'}`}>
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-bold">{editingId ? 'Edit' : 'Tambah'} {title.split(' ')[1] || 'Data'}</h3>
-                            <button onClick={() => { setIsModalOpen(false); resetForm(); }} className="p-1 rounded-md hover:bg-black/5 transition-colors"><X className="w-5 h-5" /></button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {formFields.map(renderFormField)}
-                            <div className="col-span-2 flex justify-end gap-3 pt-4">
-                                <button type="button" onClick={() => { setIsModalOpen(false); resetForm(); }}
-                                    className={`px-4 py-2.5 rounded-lg text-sm font-semibold border transition-all ${isDarkMode ? 'border-[#334155] text-gray-300 hover:bg-[#2a3547]' : 'border-gray-200 text-gray-600 hover:bg-gray-100'}`}>
-                                    Batal
-                                </button>
-                                <button type="submit" disabled={submitting}
-                                    className="px-4 py-2.5 bg-[#ff6b00] hover:bg-[#e05e00] text-white font-semibold rounded-lg text-sm transition-all disabled:opacity-60 flex items-center gap-2">
-                                    {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                                    {editingId ? 'Simpan' : 'Tambah'}
-                                </button>
+                <>
+                    {renderCreateForm && !editingId ? (
+                        renderCreateForm({
+                            isOpen: isModalOpen,
+                            onClose: () => {
+                                setIsModalOpen(false);
+                                resetForm();
+                            },
+                            onSuccess: () => {
+                                setIsModalOpen(false);
+                                resetForm();
+                                fetchItems();
+                            },
+                        })
+                    ) : (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                            <div className={`w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border shadow-xl p-6 ${isDarkMode ? 'bg-[#1e293b] border-[#334155] text-white' : 'bg-white border-gray-100 text-[#151c27]'}`}>
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-lg font-bold">{editingId ? 'Edit' : 'Tambah'} {title.split(' ')[1] || 'Data'}</h3>
+                                    <button onClick={() => { setIsModalOpen(false); resetForm(); }} className="p-1 rounded-md hover:bg-black/5 transition-colors"><X className="w-5 h-5" /></button>
+                                </div>
+                                <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {formFields.map(renderFormField)}
+                                    <div className="col-span-2 flex justify-end gap-3 pt-4">
+                                        <button type="button" onClick={() => { setIsModalOpen(false); resetForm(); }}
+                                            className={`px-4 py-2.5 rounded-lg text-sm font-semibold border transition-all ${isDarkMode ? 'border-[#334155] text-gray-300 hover:bg-[#2a3547]' : 'border-gray-200 text-gray-600 hover:bg-gray-100'}`}>
+                                            Batal
+                                        </button>
+                                        <button type="submit" disabled={submitting}
+                                            className="px-4 py-2.5 bg-[#ff6b00] hover:bg-[#e05e00] text-white font-semibold rounded-lg text-sm transition-all disabled:opacity-60 flex items-center gap-2">
+                                            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                                            {editingId ? 'Simpan' : 'Tambah'}
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
-                    </div>
-                </div>
+                        </div>
+                    )}
+                </>
             )}
 
-            {/* Modal Delete */}
+            {/* ========== MODAL DELETE ========== */}
             {isDeleteOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className={`w-full max-w-sm rounded-2xl border shadow-xl p-6 ${isDarkMode ? 'bg-[#1e293b] border-[#334155] text-white' : 'bg-white border-gray-100 text-[#151c27]'}`}>
@@ -334,7 +359,7 @@ const CrudTemplate = ({
                 </div>
             )}
 
-            {/* Modal Detail */}
+            {/* ========== MODAL DETAIL ========== */}
             {isDetailOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className={`w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border shadow-xl p-6 ${isDarkMode ? 'bg-[#1e293b] border-[#334155] text-white' : 'bg-white border-gray-100 text-[#151c27]'}`}>

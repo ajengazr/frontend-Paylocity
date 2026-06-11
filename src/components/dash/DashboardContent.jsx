@@ -7,6 +7,7 @@ import PayrollSummary from './PayrollSummary';
 import EmployeeCrud from '../employee/EmployeeCrud';
 import DepartmentCrud from '../DepartmentCrud';
 import PositionCrud from '../PositionCrud';
+import AdminCrud from '../AdminCrud';
 
 const DashboardContent = ({
     activeTab,
@@ -28,6 +29,12 @@ const DashboardContent = ({
     }
     if (activeTab === 'Jabatan') {
         return <PositionCrud isDarkMode={isDarkMode} />;
+    }
+    if (activeTab === 'Jabatan') {
+        return <PositionCrud isDarkMode={isDarkMode} />;
+    }
+    if (activeTab === 'Kelola Admin') {
+        return <AdminCrud isDarkMode={isDarkMode} />;
     }
 
     // Default: Dashboard Overview

@@ -4,8 +4,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useLoading } from '../../contexts/LoadingContext'; // ← sesuaikan path
 import { iconMap } from './iconMap';
 import { Menu, X, AlertTriangle } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
-const Sidebar = ({ menu, activeTab, setActiveTab, isDarkMode }) => {
+const Sidebar = ({ menu, activeTab, setActiveTab, isDarkMode, role }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false); // ← modal konfirmasi
     const { logout } = useAuth();
@@ -16,6 +17,11 @@ const Sidebar = ({ menu, activeTab, setActiveTab, isDarkMode }) => {
         setActiveTab(name);
         setIsOpen(false);
     };
+
+    const handleAdmin = () => {
+        setActiveTab('Kelola Admin');
+        setIsOpen(false);
+    }
 
     // Buka modal konfirmasi
     const handleLogoutClick = () => {
@@ -98,19 +104,26 @@ const Sidebar = ({ menu, activeTab, setActiveTab, isDarkMode }) => {
 
                 <div className={`p-3 lg:p-4 border-t transition-colors duration-300 ${isDarkMode ? 'border-[#2d3748]' : 'border-gray-200'
                     }`}>
-                    <button className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 text-xs lg:text-sm font-medium rounded-lg transition-all ${isDarkMode ? 'text-gray-300 hover:bg-[#2a3547]' : 'text-gray-600 hover:bg-gray-100'
-                        }`}>
-                        <iconMap.Settings className="w-4 h-4 lg:w-5 lg:h-5" />
-                        Pengaturan
-                    </button>
-                    <button
-                        onClick={handleLogoutClick}
-                        className="w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 text-xs lg:text-sm font-medium rounded-lg text-red-500 hover:bg-red-500/10 transition-all mt-1"
-                    >
-                        <iconMap.LogOut className="w-4 h-4 lg:w-5 lg:h-5" />
-                        Keluar
-                    </button>
-                </div>
+                    
+                        {/* ← TOMBOL KELOLA ADMIN: hanya SUPER_ADMIN */}
+                        {role === 'SUPER_ADMIN' && (
+                            <button 
+                            onClick={handleAdmin}
+                            className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 text-xs lg:text-sm font-medium rounded-lg transition-all ${isDarkMode ? 'text-gray-300 hover:bg-[#2a3547]' : 'text-gray-600 hover:bg-gray-100'
+                                }`}>
+                                <Shield className="w-4 h-4 lg:w-5 lg:h-5" />
+                                Kelola Admin
+                            </button>
+                        )}
+
+                        <button
+                            onClick={handleLogoutClick}
+                            className="w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 text-xs lg:text-sm font-medium rounded-lg text-red-500 hover:bg-red-500/10 transition-all mt-1"
+                        >
+                            <iconMap.LogOut className="w-4 h-4 lg:w-5 lg:h-5" />
+                            Keluar
+                        </button>
+                    </div>
             </aside>
 
             {/* Modal Konfirmasi Logout */}
